@@ -1,0 +1,31 @@
+// Custom testbench
+
+`timescale 1ns / 1ps
+
+module clock_prescaler_tb;
+  
+  reg       r_clk = 1'b0;
+  wire 		o_clk;
+  
+  // Instantiate DUT
+  clock_prescaler #(4) dut (.i_clk(r_clk), .o_clk(o_clk));
+  
+  // Generate clock
+  always #2 r_clk = ~r_clk;
+
+  initial begin
+
+    $dumpfile ("clock_prescaler_tb.vcd");
+    $dumpvars (0, clock_prescaler_tb);
+    
+    
+    
+    
+    // Wait for first o_clk edge
+    // Wait for 2nd r_clk edge
+    // Confirm time is correct
+
+   #100 $finish;	// Run for 100us
+  end
+
+endmodule

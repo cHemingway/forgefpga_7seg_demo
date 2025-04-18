@@ -1,0 +1,111 @@
+// ---------------------------------------------------------------------------
+// © 2023 Renesas Electronics
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+// OR OTHER DEALINGS IN THE SOFTWARE.
+// ---------------------------------------------------------------------------
+// Base Module Name: seven_seg_disp_ctrl_2d_tb
+// Tool version:
+//   Software: ForgeFPGA Workshop v.6.34
+// Revision:
+//   05.11.2021 r001 - New test bench design
+//   03.15.2023 r002 - Code style review
+// ---------------------------------------------------------------------------
+
+`timescale 1ns / 1ps
+
+module seven_seg_disp_ctrl_2d_tb;
+  //Parameter
+  parameter SEL_CA = 1'b0;
+  //Inputs
+  reg       r_clk;
+  reg       r_rst;
+  reg       r_load;
+  reg       r_en;
+  reg [9:0] r_data;
+  reg       r_refresh_clock;
+  //Outputs
+  wire [7:0] w_segment;
+  wire [1:0] w_active_digit;
+
+  integer i;
+  integer j;
+
+  seven_seg_disp_ctrl_2d #(
+    .SEL_CA (SEL_CA)
+  ) dut (
+    .i_clk           (r_clk),
+    .i_rst           (r_rst),
+    .i_load          (r_load),
+    .i_data          (r_data),
+    .i_en            (r_en),
+    .i_refresh_clock (r_refresh_clock),
+    .o_segment       (w_segment),
+    .o_active_digit  (w_active_digit)
+  );
+
+  always #2 r_clk = ~r_clk;
+
+  task all_data ();
+    begin
+      r_data = 10'h000;
+      #2
+      for (i = 0; i < 16; i = i + 1) begin
+        for (j = 0; j < 16; j = j + 1) begin
+          r_data[7:4] = i;
+          r_data[3:0] = j;
+          #50 r_load = 1'b1;
+          #10 r_load = 1'b0;
+          if (j == 15)
+            r_data[8] = 1;
+          if (i == 15)
+            r_data[9] = 1;
+        end
+      end
+    end
+  endtask
+
+  initial begin
+    $dumpfile("seven_seg_disp_ctrl_2d_tb.vcd");
+    $dumpvars(0, seven_seg_disp_ctrl_2d_tb);
+
+    r_clk  <= 1'b0;
+    r_load <= 1'b0;
+    r_data <= 10'h000;
+    r_rst  <= 1'b1;
+    r_en   <= 1'b0;
+    #10
+    r_rst  <= 1'b0;
+    //r_rst = 0 r_en = 0
+    all_data();
+
+    //r_rst = 0 r_en = 1
+    #10 r_en <= 1'b1;
+    all_data();
+
+    //r_rst = 1 r_en = 1
+    #10 r_rst <= 1'b1;
+    all_data();
+
+    //r_rst = 1 r_en = 0
+    #10 r_en <= 1'b0;
+    all_data();
+
+    #10 $finish;
+  end
+
+  initial begin
+    forever begin
+      #30 r_refresh_clock <= 1'b1;
+      #4  r_refresh_clock <= 1'b0;
+    end
+  end
+
+endmodule

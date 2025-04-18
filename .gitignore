@@ -1,0 +1,20 @@
+*.DS_Store
+
+# Python
+.pytest_cache
+__pycache__/
+.venv
+
+# VS Code
+.vscode
+
+# cocotb
+sim_build/
+results.xml
+cocotb.log
+cocotb_coverage/
+# Verilator
+*.vcd
+*.fsdb
+# forgefpga build
+build/
