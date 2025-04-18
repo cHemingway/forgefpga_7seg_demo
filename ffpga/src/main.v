@@ -69,7 +69,7 @@ pulse_generator display_pulse_gen (
 
 
 // 7 seg display, common cathode
-// Fixme: i_refresh_clock needs to be a pulse, not a clock
+// i_refresh_clock needs to be a pulse, not a clock
 seven_seg_disp_ctrl_2d #(.SEL_CA(1)) seven_seg_ctrl(.i_clk(i_clk_50mhz), 
 									  .i_rst(w_rst),
 									  .i_load(load), 

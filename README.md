@@ -1,5 +1,5 @@
 ## Simple demo for ForgeFPGA dev kit + PmodSSD
-A basic counter example for the ForgeFPGA dev kit, using the Pmod
+A basic counter example for the ForgeFPGA dev kit, using the [Pmod SSD](https://digilent.com/shop/pmod-ssd-seven-segment-display/) dual seven segment display included in the kit. 
 
 
 ### Credits
@@ -15,5 +15,6 @@ Then either run `python ./test_main.py` or install pytest and use that to run th
 ### TODO
 - [ ] Implement decimal to BCD convertor
 - [ ] Better coverage in cocotb, curently 7 seg decoder is untested
+- [ ] Make your own 7 seg decoder. Renesas's one has issues with bleeding and is bit undocumented
 - [ ] See if I can get less warnings
 - [ ] Actually add some timing constraints
