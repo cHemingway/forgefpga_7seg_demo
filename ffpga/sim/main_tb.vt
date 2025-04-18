@@ -5,15 +5,16 @@
 module main_tb;
 
   reg clk;
+  wire osc_en;
   reg por;
   
-  wire osc_en;
   wire pmod_cat;
   wire [6:0] pmod_segment;
   wire pmod_oe;
 
-  top dut(.i_clk_50mhz(clk),
+  main dut(.i_clk_50mhz(clk),
        .i_por(por),
+       .o_osc_en(osc_en),
        .pmod_cat(pmod_cat),
        .pmod_segment(pmod_segment),
        .pmod_oe(pmod_oe)
@@ -34,7 +35,9 @@ module main_tb;
   assign por = 1'b0;
   #30
   
-  #1000;
+  #1423390;
+  
+  $finish;
   
   end
 

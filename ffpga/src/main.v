@@ -12,6 +12,13 @@
   (* iopad_external_pin *) output pmod_oe		// Output enable, shared for all PMOD output pins
 );
 
+`ifdef VERILATOR
+`define SIMULATION
+`endif
+`ifdef __ICARUS__
+`define SIMULATION
+`endif
+
 
 // Turn on external oscillator. Has to be done by FPGA logic
 assign o_osc_en = 1'b1;
@@ -19,8 +26,8 @@ assign o_osc_en = 1'b1;
 // Enable outputs
 assign pmod_oe = 1'b1;
 
-`ifdef VERILATOR
-localparam TICK_INCREMENT = 10; // Speed up tests
+`ifdef SIMULATION
+localparam TICK_INCREMENT = 10; // Speed up tests under sim
 `else
 localparam TICK_INCREMENT = 781250;
 `endif
@@ -53,8 +60,9 @@ pulse_generator pulse_gen (
 
 wire clk_display_refresh;
 
-`ifdef VERILATOR
-clock_prescaler #(7) display_clk_gen (i_clk_50mhz, w_rst, clk_display_refresh);
+`ifdef SIMULATION 
+// Speed up tests under sim
+clock_prescaler #(5) display_clk_gen (i_clk_50mhz, w_rst, clk_display_refresh);
 `else
 clock_prescaler #(16) display_clk_gen (i_clk_50mhz, w_rst, clk_display_refresh);
 `endif
