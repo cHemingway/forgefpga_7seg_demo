@@ -12,9 +12,10 @@ async def dut_startup(dut):
     c = Clock(dut.i_clk_50mhz, 20, units="ns") # 50 MHz clock
     cocotb.start_soon(c.start())
 
-    dut.i_por.value = 1
+    dut.fpga_done.value = 0
+    dut.i_osc_ready.value = 1
     await ClockCycles(dut.i_clk_50mhz, 2)
-    dut.i_por.value = 0
+    dut.fpga_done.value = 1
     await ClockCycles(dut.i_clk_50mhz, 2)
 
     # Check that the DUT sets the output enable
@@ -27,6 +28,12 @@ async def dut_clock_div(dut):
     c = Clock(dut.i_clk_50mhz, 20, units="ns") # 50 MHz clock
     cocotb.start_soon(c.start(start_high=False))
 
+    dut.fpga_done.value = 0
+    dut.i_osc_ready.value = 1
+    await ClockCycles(dut.i_clk_50mhz, 2)
+    dut.fpga_done.value = 1
+    await ClockCycles(dut.i_clk_50mhz, 2)
+
     # Check clock cycles
     for i in range(10):
         await RisingEdge(dut.clk_781khz)
@@ -36,6 +43,12 @@ async def dut_digits_count(dut):
     """ Basic test """
     c = Clock(dut.i_clk_50mhz, 20, units="ns") # 50 MHz clock
     cocotb.start_soon(c.start(start_high=False))
+
+    dut.fpga_done.value = 0
+    dut.i_osc_ready.value = 1
+    await ClockCycles(dut.i_clk_50mhz, 2)
+    dut.fpga_done.value = 1
+    await ClockCycles(dut.i_clk_50mhz, 2)
 
     # Check the frequency of the digits
     old_value = dut.r_data.value

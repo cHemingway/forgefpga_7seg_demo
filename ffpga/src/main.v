@@ -3,13 +3,19 @@
 
 (* top *) module main (
   (* iopad_external_pin, clkbuf_inhibit *) 	input i_clk_50mhz, // input clock signal from on chip osc
-  (* iopad_external_pin *) 					input i_por,	// Wired to FPGA_DONE signal
+  (* iopad_external_pin *) 					input fpga_done,	// Wired to FPGA_DONE signal
   // Oscillator
+  (* iopad_external_pin *) input i_osc_ready,	// Oscillator is ready
   (* iopad_external_pin *) output o_osc_en,	// Enables internal oscillator
   // IO
   (* iopad_external_pin *) output pmod_cat,  // active digit of seven-segment display. 1=digit 1, 0= digit 2
   (* iopad_external_pin *) output [6:0] pmod_segment,		 // Segment + decimal point
-  (* iopad_external_pin *) output pmod_oe		// Output enable, shared for all PMOD output pins
+  (* iopad_external_pin *) output pmod_oe,		// Output enable, shared for all PMOD output pins
+  // Debug IO
+  (* iopad_external_pin *) output testpoint_1hz,	// 1Hz pulse for debugging
+  (* iopad_external_pin *) output testpoint_781KHz,	// 781kHz pulse for debugging
+  (* iopad_external_pin *) output testpoint_refresh,// Display refresh clock
+  (* iopad_external_pin *) output testpoint_oe		// Output enable for testpoints
 );
 
 `ifdef VERILATOR
@@ -43,7 +49,7 @@ reg load = 0;
   wire w_rst;
   input_reset_buf impl_input_reset_buf (
     .i_clk        (i_clk_50mhz),
-    .i_por        (i_por),
+    .i_por        (~(fpga_done & i_osc_ready)), // active low
     .o_rst        (w_rst)
   );
 
@@ -125,6 +131,12 @@ assign pmod_cat = active_digit_onehot[1];
 
 // Drop the decimal place (bit 0)
 assign pmod_segment = o_segment[7:1];
+
+// Debugging signals
+assign testpoint_1hz = r_data[0];
+assign testpoint_781KHz = clk_781khz;
+assign testpoint_refresh = clk_display_refresh;
+assign testpoint_oe = 1'b1;
 
 
 endmodule
