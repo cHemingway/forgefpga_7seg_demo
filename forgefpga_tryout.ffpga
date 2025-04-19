@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GPDProject version="37" oldestCompatibleVersion="32" GPDVersion="6.48.001" lastChange="19 Apr 2025 14:55:09" projectChecksumState="1" projectChecksum="76c5a499">
+<GPDProject version="37" oldestCompatibleVersion="32" GPDVersion="6.48.001" lastChange="19 Apr 2025 15:10:52" projectChecksumState="1" projectChecksum="6a42ebde">
     <generalProjectSettings/>
     <chip family="04" type="06" friendlyName="FFPGA" partNumber="67" package="26">
         <nvmData registerLenght="480">0 0 0 28 0 0 0 0 A5 A5 A5 A5 0 0 0 0 0 0 0 0 5A 5A 5A 5A 0 0 0 2 22 22 22 22 22 22 22 22 22 22 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</nvmData>
@@ -182,7 +182,7 @@
         <wire output="32" input="73" autoRouting="1" pen="#ff8000ff;1.00;1;32;128" lineType="2" protected="1" CWLid="27" wireText="NET27" wireState="0">
             <points>(320.00,366.00); (220.00,366.00)</points>
         </wire>
-        <wire output="41" input="0" autoRouting="1" pen="#0293fdff;1.00;1;32;128" lineType="7" protected="1" CWLid="28" wireText="NET28" wireState="0">
+        <wire output="41" input="0" autoRouting="1" pen="#ff8000ff;1.00;1;32;128" lineType="2" protected="1" CWLid="28" wireText="NET28" wireState="0">
             <points>(320.00,597.00); (97.00,597.00)</points>
         </wire>
         <wire output="42" input="1" autoRouting="1" pen="#0293fdff;1.00;1;32;128" lineType="7" protected="1" CWLid="29" wireText="NET29" wireState="0">
@@ -239,10 +239,10 @@
         <wire output="59" input="18" autoRouting="1" pen="#ff8000ff;1.00;1;32;128" lineType="2" protected="1" CWLid="46" wireText="NET46" wireState="0">
             <points>(961.00,506.00); (1071.00,506.00)</points>
         </wire>
-        <wire output="60" input="19" autoRouting="1" pen="#0293fdff;1.00;1;32;128" lineType="7" protected="1" CWLid="47" wireText="NET47" wireState="0">
+        <wire output="60" input="19" autoRouting="1" pen="#ff8000ff;1.00;1;32;128" lineType="2" protected="1" CWLid="47" wireText="NET47" wireState="0">
             <points>(320.00,630.00); (108.00,630.00); (108.00,648.00); (54.00,648.00); (54.00,633.00)</points>
         </wire>
-        <wire output="61" input="20" autoRouting="1" pen="#ff8000ff;1.00;1;32;128" lineType="2" protected="1" CWLid="48" wireText="NET48" wireState="0">
+        <wire output="61" input="20" autoRouting="1" pen="#0293fdff;1.00;1;32;128" lineType="7" protected="1" CWLid="48" wireText="NET48" wireState="0">
             <points>(320.00,580.00); (220.00,580.00); (220.00,588.00); (169.00,588.00); (169.00,582.00)</points>
         </wire>
         <wire output="62" input="21" autoRouting="1" pen="#ff8000ff;1.00;1;32;128" lineType="2" protected="1" CWLid="49" wireText="NET49" wireState="0">
@@ -614,11 +614,13 @@
             <openedTab>clock_prescaler_tb.vt</openedTab>
             <openedTab>main_tb.vt</openedTab>
             <openedTab>Netlist</openedTab>
+            <openedTab>timing_constraints.sdc</openedTab>
+            <openedTab>Timing Analysis</openedTab>
         </openedTabs>
         <pipelineStagesStates>
             <pipelineStageState>
                 <pipelineStage>0</pipelineStage>
-                <pipelineState>3</pipelineState>
+                <pipelineState>1</pipelineState>
             </pipelineStageState>
             <pipelineStageState>
                 <pipelineStage>1</pipelineStage>
@@ -642,10 +644,12 @@
                 <module filename="main_tb.vt"/>
             </sim>
             <netlists/>
-            <timing-constraints/>
+            <timing-constraints>
+                <module filename="timing_constraints.sdc"/>
+            </timing-constraints>
         </modules>
         <io-spec-tool>
-            <records filter="24" filter1="16">
+            <records filter="2" filter1="16">
                 <record id="CLK_t[0:0]_W_in0">
                     <port-name>i_clk_50mhz</port-name>
                 </record>
