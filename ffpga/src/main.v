@@ -56,7 +56,7 @@ reg load = 0;
 // 50MHz / 2^6 = 781.25KHz, lowest we can go that isn't fractional hz
 wire clk_781khz;
 wire clk_781khz_pulse;
-clock_prescaler #(6) counter_clk_gen (i_clk_50mhz, w_rst, clk_781khz);
+clock_prescaler #(5) counter_clk_gen (i_clk_50mhz, w_rst, clk_781khz);
 
 pulse_generator pulse_gen (
 	.clock(i_clk_50mhz),

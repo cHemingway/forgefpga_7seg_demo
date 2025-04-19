@@ -15,6 +15,6 @@ module clock_prescaler #(
         end
     end
 
-    assign o_clk = counter[N_STAGES-1];
+    assign o_clk = counter[N_STAGES];
 
 endmodule

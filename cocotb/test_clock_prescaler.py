@@ -27,8 +27,8 @@ async def clock_prescaler(dut):
     await RisingEdge(dut.o_clk)
     finish_time = cocotb.utils.get_sim_time("ns")
     
-    # Check the clock period, should be 2**6 = 32 times the input clock period
-    assert (finish_time - start_time) == 64 * 20
+    # Check the clock period, should be 2**6 = 64 times the input clock period
+    assert (finish_time - start_time) == 128 * 20
 
 def test_clock_prescaler_runner():
     sim = "verilator"  # or "icarus", "modelsim", etc.

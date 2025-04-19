@@ -13,7 +13,6 @@ cocotb testbench is the best, install cocotb and verilator to run it
 Then either run `python ./test_main.py` or install pytest and use that to run them
 
 ### TODO
-- [ ] Fix counting rate, should be 1Hz
 - [ ] Implement decimal to BCD convertor
 - [ ] Better coverage in cocotb main testbench, curently 7 seg decoder is untested
 - [ ] Make your own 7 seg decoder. Renesas's one has issues with bleeding and is bit undocumented
