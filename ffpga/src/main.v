@@ -86,33 +86,38 @@ seven_seg_disp_ctrl_2d #(.SEL_CA(1)) seven_seg_ctrl(.i_clk(i_clk_50mhz),
 									  .i_data(r_data), 
 									  .o_active_digit(active_digit_onehot), 
 									  .o_segment(o_segment));
+
+
+// 1Hz clock for the digit counter
+wire onehertz_pulse;
+down_counter #(.COUNT_FROM(TICK_INCREMENT)) onehertz_counter (
+	.i_clk(i_clk_50mhz),
+	.i_rst(w_rst),
+	.i_count_en(clk_781khz_pulse),
+	.count_hit(onehertz_pulse)
+);
+
 									  
 // Digit counter, running off 50MHz clock
 // FIXME: seven_seg_disp_ctrl_2d takes in BCD not Binary!
 always @(posedge i_clk_50mhz) begin
 	if (w_rst) begin
-		clock_counter <= TICK_INCREMENT;
 		r_data <= 0;
 		load <= 0;
-	end else if (clk_781khz_pulse) begin
-		// Increment clock counter
-		if (clock_counter==0) begin
-			clock_counter <= TICK_INCREMENT;
-			if (r_data==99) begin
+	end else begin
+		if (onehertz_pulse) begin
+			if (r_data == 99) begin
 				r_data <= 0;
+				load <= 1;
 			end else begin
 				r_data <= r_data + 1;
+				load <= 1;
 			end
-			load <= 1;
 		end else begin
-			clock_counter <= clock_counter - 1;
 			r_data <= r_data;
 			load <= 0;
 		end
-	end else begin
-		clock_counter <= clock_counter;
-		load <= 0;
-	end;
+	end
 end
 
 // Combinatorial logic for active digit, see PmodSSD schematic

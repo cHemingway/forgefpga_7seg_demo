@@ -65,6 +65,7 @@ def test_main_runner():
 
     sources = [proj_path / "ffpga/src/main.v",
                proj_path / "ffpga/src/clock_prescaler.v",
+               proj_path / "ffpga/src/down_counter.v",
                proj_path / "ffpga/src/input_reset_buf.v",
                proj_path / "ffpga/src/pulse_generator.v",
                proj_path / "ffpga/lib/seven_seg_disp_ctrl_2d.v"
