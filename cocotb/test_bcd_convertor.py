@@ -30,7 +30,6 @@ async def test_convert_24(dut):
     await ClockCycles(dut.i_clk, 1)
     dut.i_rst.value = 0
     await ClockCycles(dut.i_clk, 2)
-    # assert dut.o_bcd_valid.value == 0
 
     # Load in cycle
     dut.i_data.value = 24
@@ -43,17 +42,15 @@ async def test_convert_24(dut):
     
     print("TENS \t ONES \t BINARY \t")
     for i in range (10):
-        print(bin(dut.scratch.value[10:13]), end="\t")
-        print(bin(dut.scratch.value[6:9]), end="\t")
-        print(bin(dut.scratch.value[0:5]), end="\t")
+        print(bin(dut.scratch.value[0:7]), end="\t")
+        print(bin(dut.scratch.value[8:11]), end="\t")
+        print(bin(dut.scratch.value[11:15]), end="\t")
         print("")
         await ClockCycles(dut.i_clk, 1)
-
-        
-        
+    assert dut.o_bcd_data.value == 0x24
 
 @cocotb.test()
-async def test_convert_99(dut):
+async def test_99(dut):
     """ Test converting the number 99 """
     c = Clock(dut.i_clk, 20, units="ns") # 50 MHz clock
     cocotb.start_soon(c.start(start_high=False))
@@ -61,7 +58,6 @@ async def test_convert_99(dut):
     await ClockCycles(dut.i_clk, 1)
     dut.i_rst.value = 0
     await ClockCycles(dut.i_clk, 2)
-    # assert dut.o_bcd_valid.value == 0
 
     # Load in cycle
     dut.i_data.value = 99
@@ -71,10 +67,63 @@ async def test_convert_99(dut):
     dut.i_load.value = 0
     await ClockCycles(dut.i_clk, 1)
     assert dut.o_bcd_valid.value == 0
-    
-    await First(ClockCycles(dut.i_clk, 30), RisingEdge(dut.o_bcd_valid))
+    # Should be valid after 8 cycles
+    await First(ClockCycles(dut.i_clk, 8), RisingEdge(dut.o_bcd_valid))
     assert dut.o_bcd_valid.value == 1
     assert dut.o_bcd_data.value == 0x99
+
+
+@cocotb.test()
+async def test_latency(dut):
+    """ Test latency, should take 8 cycles"""
+    c = Clock(dut.i_clk, 20, units="ns") # 50 MHz clock
+    cocotb.start_soon(c.start(start_high=False))
+    dut.i_rst.value = 1
+    await ClockCycles(dut.i_clk, 1)
+    dut.i_rst.value = 0
+    await ClockCycles(dut.i_clk, 2)
+    # Load in cycle
+    dut.i_data.value = 55
+    dut.i_load.value = 1
+    await ClockCycles(dut.i_clk, 1)
+    # Deassert load, o_bcd_valid should go low 1 cycle later
+    dut.i_load.value = 0
+    await ClockCycles(dut.i_clk, 1)
+    assert dut.o_bcd_valid.value == 0
+    # Should be valid after 8 cycles
+    await ClockCycles(dut.i_clk, 7)
+    assert dut.o_bcd_valid.value == 0
+    await ClockCycles(dut.i_clk, 1)
+    assert dut.o_bcd_valid.value == 1
+    assert dut.o_bcd_data.value == 0x55
+    await ClockCycles(dut.i_clk, 1)
+    assert dut.o_bcd_valid.value == 0
+
+
+@cocotb.test(timeout_time=10, timeout_unit="sec")
+async def test_all_numbers(dut):
+    """ Test converting the number 99 """
+    c = Clock(dut.i_clk, 20, units="ns") # 50 MHz clock
+    cocotb.start_soon(c.start(start_high=False))
+    dut.i_rst.value = 1
+    await ClockCycles(dut.i_clk, 1)
+    dut.i_rst.value = 0
+    await ClockCycles(dut.i_clk, 2)
+
+    for i in range(100):
+        # Load in cycle
+        dut.i_data.value = i
+        dut.i_load.value = 1
+        await ClockCycles(dut.i_clk, 1)
+        # Deassert load, o_bcd_valid should go low 1 cycle later
+        dut.i_load.value = 0
+        await ClockCycles(dut.i_clk, 1)
+        assert dut.o_bcd_valid.value == 0
+        
+        await First(ClockCycles(dut.i_clk, 8), RisingEdge(dut.o_bcd_valid))
+        assert dut.o_bcd_valid.value == 1
+        assert int(dut.o_bcd_data.value[4:7]) == i % 10 # ones
+        assert int(dut.o_bcd_data.value[0:3]) == i // 10 # tens
 
 
 def test_bcd_convertor_runner():
