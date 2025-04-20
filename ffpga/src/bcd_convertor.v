@@ -7,7 +7,7 @@ module bcd_convertor (
     input wire [7:0]    i_data,        // 0-99
     input wire          i_load,        // pulse to load new data
     output wire [7:0]   o_bcd_data,    // 2 BCD digits, packed
-    output reg          o_bcd_valid   // high when valid data
+    output reg          o_bcd_valid   // pulse high when valid data
 );
     // Algorithm is based on the "Double Dabble" method
     // https://en.wikipedia.org/wiki/Double_dabble
@@ -26,16 +26,20 @@ module bcd_convertor (
             shift_count <= SHIFTS;
         end else begin
             if (shift_count == 0) begin
-                o_bcd_valid <= 1;   // Could we shortcut and set this when shift_count is one?
+                o_bcd_valid <= 0;  // Reset valid flag when done
             end else begin
-                o_bcd_valid <= 0;
-                shift_count <= shift_count - 1;
                 if ((scratch & 'hF000) > 'h4000) begin // BCD Ones
                     scratch <= (scratch + 'h3000) << 1;
                 end else if ((scratch & 'h0F00) > 'h0400) begin // BCD Tens
                     scratch <= (scratch + 'h0300) << 1;
                 end else begin
                     scratch <= scratch << 1;
+                end
+
+                o_bcd_valid <= 0;
+                shift_count <= shift_count - 1;
+                if (shift_count == 1) begin
+                    o_bcd_valid <= 1; // Set valid flag when the last shift is done
                 end
             end
         end
