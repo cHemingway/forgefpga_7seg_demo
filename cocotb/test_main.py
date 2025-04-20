@@ -56,12 +56,12 @@ async def dut_digits_count(dut):
     # Count from 0 to 99 and then reset
     for i in range(100):
         assert dut.r_data.value == i
-        await RisingEdge(dut.load)
+        await RisingEdge(dut.r_data_ready)
     # Check that the value resets back to 0
     assert dut.r_data.value == 0
-    await RisingEdge(dut.load)
+    await RisingEdge(dut.r_data_ready)
     assert dut.r_data.value == 1
-    await RisingEdge(dut.load)
+    await RisingEdge(dut.r_data_ready)
     assert dut.r_data.value == 2
 
 def test_main_runner():
@@ -81,6 +81,7 @@ def test_main_runner():
                proj_path / "ffpga/src/down_counter.v",
                proj_path / "ffpga/src/input_reset_buf.v",
                proj_path / "ffpga/src/pulse_generator.v",
+               proj_path / "ffpga/src/bcd_convertor.v",
                proj_path / "ffpga/lib/seven_seg_disp_ctrl_2d.v"
             ]
 

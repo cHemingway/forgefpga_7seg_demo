@@ -35,15 +35,15 @@ assign pmod_oe = 1'b1;
 `ifdef SIMULATION
 localparam TICK_INCREMENT = 10; // Speed up tests under sim
 `else
-localparam TICK_INCREMENT = 781250;
+localparam TICK_INCREMENT = 78125;
 `endif
 
 wire [1:0] active_digit_onehot;
 wire [7:0] o_segment;
 
 reg [20:0] clock_counter = TICK_INCREMENT;
-reg [9:0] r_data = 0;
-reg load = 0;
+reg [7:0] r_data = 0;
+reg r_data_ready = 0;
 
 // reset buffer
   wire w_rst;
@@ -81,15 +81,26 @@ pulse_generator display_pulse_gen (
 	.pulse_posedge_out(display_refresh_pulse)
 );
 
+// BCD convertor
+wire [7:0] bcd_data;
+wire bcd_data_ready;
+bcd_convertor bcd_conv(
+	.i_clk(i_clk_50mhz),
+	.i_rst(w_rst),
+	.i_data(r_data), // 0-99
+	.i_load(r_data_ready), // pulse to load new data
+	.o_bcd_data(bcd_data), // 2 BCD digits, packed
+	.o_bcd_valid(bcd_data_ready) // high when valid data
+);
 
 // 7 seg display, common cathode
 // i_refresh_clock needs to be a pulse, not a clock
 seven_seg_disp_ctrl_2d #(.SEL_CA(1)) seven_seg_ctrl(.i_clk(i_clk_50mhz), 
 									  .i_rst(w_rst),
-									  .i_load(load), 
+									  .i_load(bcd_data_ready), 
 									  .i_en(1'b1), 
 									  .i_refresh_clock(display_refresh_pulse), 
-									  .i_data(r_data), 
+									  .i_data({2'b0, bcd_data}), // High bits are decimal point, ignore
 									  .o_active_digit(active_digit_onehot), 
 									  .o_segment(o_segment));
 
@@ -109,19 +120,19 @@ down_counter #(.COUNT_FROM(TICK_INCREMENT)) onehertz_counter (
 always @(posedge i_clk_50mhz) begin
 	if (w_rst) begin
 		r_data <= 0;
-		load <= 0;
+		r_data_ready <= 0;
 	end else begin
 		if (onehertz_pulse) begin
 			if (r_data == 99) begin
 				r_data <= 0;
-				load <= 1;
+				r_data_ready <= 1;
 			end else begin
 				r_data <= r_data + 1;
-				load <= 1;
+				r_data_ready <= 1;
 			end
 		end else begin
 			r_data <= r_data;
-			load <= 0;
+			r_data_ready <= 0;
 		end
 	end
 end
