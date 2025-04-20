@@ -41,7 +41,6 @@ localparam TICK_INCREMENT = 78125;
 wire [1:0] active_digit_onehot;
 wire [7:0] o_segment;
 
-reg [20:0] clock_counter = TICK_INCREMENT;
 reg [7:0] r_data = 0;
 reg r_data_ready = 0;
 
@@ -116,7 +115,7 @@ down_counter #(.COUNT_FROM(TICK_INCREMENT)) onehertz_counter (
 
 									  
 // Digit counter, running off 50MHz clock
-// FIXME: seven_seg_disp_ctrl_2d takes in BCD not Binary!
+// Output goes to BCD convertor
 always @(posedge i_clk_50mhz) begin
 	if (w_rst) begin
 		r_data <= 0;
